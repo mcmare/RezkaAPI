@@ -1,3 +1,5 @@
+from operator import index
+
 import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
@@ -30,6 +32,16 @@ page = session.post(url_site)
 soup = BeautifulSoup(page.text, "html.parser")
 
 
+def get_topnav_item():
+    list_id = []
+    re = soup.find_all('li', attrs={'class': lambda value: value and "b-topnav__item" in value})
+    for item in re:
+        index = (re.index(item))
+        list_id.append(f"{item.get('class')[0]} {item.get('class')[1]} ")
+    return list_id
+
+# print(get_topnav_item())
+
 #Получаем катеогории и ссылки на них
 def get_main_category():
     # Получаем теги a с категориями
@@ -38,12 +50,30 @@ def get_main_category():
     re = soup.find_all('a', class_='b-topnav__item-link')
     # Перечисляем категории и ссылки на них
     for data in re:
-        index = re.index(data)
-        category_id = index
-        category_name = re[index].text.strip()
-        category_url = re[index].get('href')
-        categories.append({'id':category_id, 'name':category_name, 'url':category_url})
+        category_id = re.index(data)
+        category_name = re[category_id].text.strip()
+        category_url = re[category_id].get('href')
+        li_id = get_topnav_item()[category_id]
+        categories.append({'id':category_id, 'name':category_name, 'url':category_url, 'li_id':li_id})
     return categories
 
-# req = get_main_category()
-# print(req)
+# print(get_main_category())
+
+def get_main_subcategory(category_id):
+    # subcategories = []
+    # re = soup.find_all('li', attrs={'class': lambda value: value and "b-topnav__item" in value})
+    # for data in re:
+    #     req = data.find_all('ul', class_='left')
+    #     # print(req)
+    #     subcategory_id = re.index(data)
+    #     for n in range(category_id):
+    #         req = n.find('li')
+    #         print(req)
+    #         subcategory_name = re[subcategory_id].text.strip()
+    #     # subcategories.append()
+    # return subcategories
+
+get_main_subcategory(0)
+
+def list_category(list_id):
+    pass
