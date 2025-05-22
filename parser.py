@@ -1,5 +1,3 @@
-from operator import index
-
 import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
@@ -31,7 +29,7 @@ page = session.post(url_site)
 # Парсим в суп
 soup = BeautifulSoup(page.text, "html.parser")
 
-
+# Получаем класс тега li на верхнее меню
 def get_topnav_item():
     list_id = []
     re = soup.find_all('li', attrs={'class': lambda value: value and "b-topnav__item" in value})
@@ -59,21 +57,32 @@ def get_main_category():
 
 # print(get_main_category())
 
+# Получаем подкатегории из категорий меню
 def get_main_subcategory(category_id):
-    # subcategories = []
-    # re = soup.find_all('li', attrs={'class': lambda value: value and "b-topnav__item" in value})
-    # for data in re:
-    #     req = data.find_all('ul', class_='left')
-    #     # print(req)
-    #     subcategory_id = re.index(data)
-    #     for n in range(category_id):
-    #         req = n.find('li')
-    #         print(req)
-    #         subcategory_name = re[subcategory_id].text.strip()
-    #     # subcategories.append()
-    # return subcategories
+    subcategories = []
+    if category_id <= 3:
+        re = soup.find_all('li', attrs={'class': lambda value: value and 'b-topnav__item ' in value})[category_id]
+        re = re.find_all('ul', class_='left')[0]
+        re = re.find_all('li')
+        for data in re:
+            req = data.find_all('a')
+            subcategory_id = re.index(data)
+            subcategory_name = re[subcategory_id].text.strip()
+            subcategory_url = req[0].get('href')
+            subcategories.append({'id':subcategory_id, 'name':subcategory_name, 'url':subcategory_url})
+    else:
+        re = soup.find_all('li', attrs={'class': lambda value: value and 'b-topnav__item ' in value})[category_id]
+        req = re.find('a')
+        subcategory_id = 0
+        subcategory_name = re.text.strip()
+        subcategory_url = req.get('href')
+        subcategories.append({'id': subcategory_id, 'name': subcategory_name, 'url': subcategory_url})
+    return subcategories
 
-get_main_subcategory(0)
+
+
+# get_main_subcategory(4)
+
 
 def list_category(list_id):
     pass

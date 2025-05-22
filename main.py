@@ -2,7 +2,7 @@ import bcrypt
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, EmailStr, Field
 import uvicorn
-from parser import get_main_category
+from parser import get_main_category, get_main_subcategory
 from database import create_user
 app = FastAPI()
 
@@ -41,6 +41,10 @@ def get_menu_category(id: int):
             return n
     raise HTTPException(status_code=404, detail="Категория не найдена")
 
+@app.get("/subcategories/{cat_id}", summary="Подкатегории в основном меню", tags=["Категории"])
+def get_menu_subcategory(cat_id: int):
+    subcategories = get_main_subcategory(cat_id)
+    return subcategories
 
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)

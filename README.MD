@@ -8,4 +8,7 @@ pip install -r requirements.txt
 ```
 REZKA_LOGIN=login
 REZKA_PASSWORD=password
+
+SECRET_KEY=your_secret_key
+ALGORITHM=HS256
 ```
