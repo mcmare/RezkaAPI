@@ -29,6 +29,7 @@ page = session.post(url_site)
 # Парсим в суп
 soup = BeautifulSoup(page.text, "html.parser")
 
+
 # Получаем класс тега li на верхнее меню
 def get_topnav_item():
     list_id = []
@@ -38,9 +39,10 @@ def get_topnav_item():
         list_id.append(f"{item.get('class')[0]} {item.get('class')[1]} ")
     return list_id
 
+
 # print(get_topnav_item())
 
-#Получаем катеогории и ссылки на них
+# Получаем категории и ссылки на них
 def get_main_category():
     # Получаем теги a с категориями
     categories = []
@@ -52,10 +54,9 @@ def get_main_category():
         category_name = re[category_id].text.strip()
         category_url = re[category_id].get('href')
         li_id = get_topnav_item()[category_id]
-        categories.append({'id':category_id, 'name':category_name, 'url':category_url, 'li_id':li_id})
+        categories.append({'id': category_id, 'name': category_name, 'url': category_url, 'li_id': li_id})
     return categories
 
-# print(get_main_category())
 
 # Получаем подкатегории из категорий меню
 def get_main_subcategory(category_id):
@@ -69,7 +70,7 @@ def get_main_subcategory(category_id):
             subcategory_id = re.index(data)
             subcategory_name = re[subcategory_id].text.strip()
             subcategory_url = req[0].get('href')
-            subcategories.append({'id':subcategory_id, 'name':subcategory_name, 'url':subcategory_url})
+            subcategories.append({'id': subcategory_id, 'name': subcategory_name, 'url': subcategory_url})
     else:
         re = soup.find_all('li', attrs={'class': lambda value: value and 'b-topnav__item ' in value})[category_id]
         req = re.find('a')
@@ -79,10 +80,21 @@ def get_main_subcategory(category_id):
         subcategories.append({'id': subcategory_id, 'name': subcategory_name, 'url': subcategory_url})
     return subcategories
 
-
-
-# get_main_subcategory(4)
-
-
-def list_category(list_id):
-    pass
+def get_list_in_category(category_id, pages=1):
+    list_in_category = []
+    category = get_main_category()
+    if pages == 1:
+        page = session.post(url_site + category[category_id]['url'])
+    else:
+        page = session.post(url_site + category[category_id]['url'] + 'page/' + str(pages))
+    soup = BeautifulSoup(page.text, "html.parser")
+    re = soup.find_all('div', class_='b-content__inline_item')
+    for data in re:
+        # print(data)
+        id = data.get('data-id')
+        img = data.select('div.b-content__inline_item-cover img')[0].get('src')
+        # print(img)
+        href = data.select('div.b-content__inline_item-link a')[0].get('href')
+        text = data.select('div.b-content__inline_item-link a')[0].text
+        list_in_category.append({'id': id, 'img': img, 'href': href, 'text': text})
+    return list_in_category
