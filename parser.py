@@ -80,6 +80,8 @@ def get_main_subcategory(category_id):
         subcategories.append({'id': subcategory_id, 'name': subcategory_name, 'url': subcategory_url})
     return subcategories
 
+
+
 def get_list_in_category(category_id, pages=1):
     list_in_category = []
     category = get_main_category()
@@ -98,3 +100,19 @@ def get_list_in_category(category_id, pages=1):
         text = data.select('div.b-content__inline_item-link a')[0].text
         list_in_category.append({'id': id, 'img': img, 'href': href, 'text': text})
     return list_in_category
+
+
+def get_collections(pages=1):
+    list_collections = []
+    page = session.post(url_site + "/collections/" + "page/" + str(pages) + "/")
+    soup = BeautifulSoup(page.text, "html.parser")
+    re = soup.find_all('div', class_ = 'b-content__collections_item')
+    for data in re:
+        id = re.index(data)
+        num = data.find('div', class_ = 'num').text
+        img = data.find('img', class_ = 'cover').get('src')
+        href = data.find('a', class_ = 'title').get('href')
+        text = data.find('a', class_ = 'title').text
+        list_collections.append({'id': id, 'num': num, 'img': img, 'href': href, 'text': text})
+    return list_collections
+

@@ -4,7 +4,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.params import Query
 from pydantic import BaseModel, EmailStr, Field
 import uvicorn
-from parser import get_main_category, get_main_subcategory, get_list_in_category
+from parser import get_main_category, get_main_subcategory, get_list_in_category, get_collections
 from database import create_user
 app = FastAPI()
 
@@ -50,13 +50,17 @@ def get_menu_subcategory(cat_id: int):
 
 
 @app.get("/list_in_category/{cat_id}/{pages}", summary="Вывод списка в категории", tags=["Список"])
-def get_list_items(cat_id: int, pages: Optional[int] = 1):
+def get_list_items(cat_id: int, pages: int):
     if pages:
         list_items = get_list_in_category(cat_id, pages)
     else:
         list_items = get_list_in_category(cat_id)
     return list_items
 
+@app.get("/list_collections", summary="Вывод списка коллекций", tags=["Список"])
+def get_list_collections(pages: Optional[int] = 1):
+    list_collections = get_collections(pages)
+    return list_collections
 
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)
