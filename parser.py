@@ -81,7 +81,7 @@ def get_main_subcategory(category_id):
     return subcategories
 
 
-
+#Получаем список фильмов в категории
 def get_list_in_category(category_id, pages=1):
     list_in_category = []
     category = get_main_category()
@@ -101,7 +101,7 @@ def get_list_in_category(category_id, pages=1):
         list_in_category.append({'id': id, 'img': img, 'href': href, 'text': text})
     return list_in_category
 
-
+#Получаем список коллекций
 def get_collections(pages=1):
     list_collections = []
     page = session.post(url_site + "/collections/" + "page/" + str(pages) + "/")
@@ -116,3 +116,18 @@ def get_collections(pages=1):
         list_collections.append({'id': id, 'num': num, 'img': img, 'href': href, 'text': text})
     return list_collections
 
+#Получаем список в фильмов в поиске
+def search_content(query, pages=1):
+    search_list = []
+    search_url = f"{url_site}/search/?do=search&subaction=search&q={query}&page={pages}"
+    page = session.post(search_url)
+    soup = BeautifulSoup(page.text, "html.parser")
+    re = soup.find_all('div', class_ = 'b-content__inline_item')
+    for data in re:
+        id = int(data.attrs["data-id"])
+        type = data.find('i', class_='entity').text
+        title = data.find('div', class_='b-content__inline_item-link').find('a').text
+        url = data.find('div').find('a').get('href')
+        img = data.find('img').get('src')
+        search_list.append({'id': id, 'type': type, 'title': title, 'url': url})
+    return search_list
