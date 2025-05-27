@@ -129,5 +129,5 @@ def search_content(query, pages=1):
         title = data.find('div', class_='b-content__inline_item-link').find('a').text
         url = data.find('div').find('a').get('href')
         img = data.find('img').get('src')
-        search_list.append({'id': id, 'type': type, 'title': title, 'url': url})
+        search_list.append({'id': id, 'img': img, 'type': type, 'title': title, 'url': url})
     return search_list
