@@ -131,3 +131,17 @@ def search_content(query, pages=1):
         img = data.find('img').get('src')
         search_list.append({'id': id, 'img': img, 'type': type, 'title': title, 'url': url})
     return search_list
+
+def details(id):
+    details = []
+    details_url = f"{url_site}/engine/ajax/quick_content.php?id={id}&is_touch=1"
+    page = session.get(details_url)
+    soup = BeautifulSoup(page.text, "html.parser")
+    url = soup.find('div', class_='b-content__bubble_title').find('a').get('href')
+    type = soup.find('i', class_='entity').text
+    title = soup.find('div', class_='b-content__bubble_title').find('a').text
+    description = soup.find('div', class_='b-content__bubble_text').text
+    # img = soup.find('div', class_='b-content__bubble_image').get('src')
+    details.append({'url': url, 'type': type, 'title': title, 'description': description})
+    return details
+
