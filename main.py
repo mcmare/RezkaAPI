@@ -5,7 +5,7 @@ from fastapi.params import Query
 from pydantic import BaseModel, EmailStr, Field
 import uvicorn
 from parser import get_main_category, get_main_subcategory, get_list_in_category, get_collections, search_content, \
-    details
+    details, get_translate
 from database import create_user
 app = FastAPI()
 
@@ -70,6 +70,10 @@ def get_list_in_search(query: Optional[str] = None, pages: Optional[int] = 1):
 @app.get("/details", summary="Вывод информации о фильме", tags=["Детали"])
 def get_details(id: int):
     return details(id)
+
+@app.get("/translates", summary="Вывод списка переводов", tags=["Детали"])
+def get_translates(id: int):
+    return get_translate(id)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)

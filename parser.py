@@ -3,6 +3,9 @@ from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 import os
 
+from sqlalchemy.orm.unitofwork import track_cascade_events
+from unicodedata import category
+
 load_dotenv()
 
 url_login = "https://rezka.fi/ajax/login/"
@@ -141,7 +144,25 @@ def details(id):
     type = soup.find('i', class_='entity').text
     title = soup.find('div', class_='b-content__bubble_title').find('a').text
     description = soup.find('div', class_='b-content__bubble_text').text
-    # img = soup.find('div', class_='b-content__bubble_image').get('src')
-    details.append({'url': url, 'type': type, 'title': title, 'description': description})
+    page = session.get(url)
+    soup = BeautifulSoup(page.text, "html.parser")
+    img = soup.find('div', class_='b-post__infotable_left').find('img').get('src')
+    print(img)
+    details.append({'id': id, 'url': url, 'type': type, 'title': title, 'description': description, 'img': img})
     return details
 
+def get_translate(id):
+    translates = []
+    url = f"{url_site}/engine/ajax/quick_content.php?id={id}&is_touch=1"
+    page = session.get(url)
+    soup = BeautifulSoup(page.text, "html.parser")
+    url = soup.find('div', class_='b-content__bubble_title').find('a').get('href')
+    page = session.get(url)
+    soup = BeautifulSoup(page.text, "html.parser")
+    tr = soup.find('div', class_='b-translators__block').find_all('li')
+    for i in tr:
+        tr_id = i.get('data-translator_id')
+        tr_director = i.get('data-director')
+        tr_title = i.get('title')
+        translates.append({'id': tr_id, 'director': tr_director, 'title': tr_title})
+    return translates
