@@ -166,3 +166,4 @@ def get_translate(id):
         tr_title = i.get('title')
         translates.append({'id': tr_id, 'director': tr_director, 'title': tr_title})
     return translates
+
