@@ -3,9 +3,6 @@ from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 import os
 
-from sqlalchemy.orm.unitofwork import track_cascade_events
-from unicodedata import category
-
 load_dotenv()
 
 url_login = "https://rezka.fi/ajax/login/"
@@ -27,13 +24,15 @@ if response.json()['success']:
 if not response.json()['success']:
     print(response.json()['message'])
 
+
+
 # Получаем сайт после авторизации
-page = session.post(url_site)
+page = session.get(url_site)
 # Парсим в суп
 soup = BeautifulSoup(page.text, "html.parser")
 
 
-# Получаем класс тега li на верхнее меню
+#Получаем класс тега li на верхнее меню
 def get_topnav_item():
     list_id = []
     re = soup.find_all('li', attrs={'class': lambda value: value and "b-topnav__item" in value})
@@ -43,7 +42,6 @@ def get_topnav_item():
     return list_id
 
 
-# print(get_topnav_item())
 
 # Получаем категории и ссылки на них
 def get_main_category():
@@ -135,6 +133,7 @@ def search_content(query, pages=1):
         search_list.append({'id': id, 'img': img, 'type': type, 'title': title, 'url': url})
     return search_list
 
+#Получаем детали о фильме
 def details(id):
     details = []
     details_url = f"{url_site}/engine/ajax/quick_content.php?id={id}&is_touch=1"
@@ -147,10 +146,10 @@ def details(id):
     page = session.get(url)
     soup = BeautifulSoup(page.text, "html.parser")
     img = soup.find('div', class_='b-post__infotable_left').find('img').get('src')
-    print(img)
     details.append({'id': id, 'url': url, 'type': type, 'title': title, 'description': description, 'img': img})
     return details
 
+#получаем список переводов
 def get_translate(id):
     translates = []
     url = f"{url_site}/engine/ajax/quick_content.php?id={id}&is_touch=1"

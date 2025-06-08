@@ -6,6 +6,7 @@ from pydantic import BaseModel, EmailStr, Field
 import uvicorn
 from parser import get_main_category, get_main_subcategory, get_list_in_category, get_collections, search_content, \
     details, get_translate
+# from getstream import
 from database import create_user
 app = FastAPI()
 
