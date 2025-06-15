@@ -149,6 +149,7 @@ def details(id):
     details.append({'id': id, 'url': url, 'type': type, 'title': title, 'description': description, 'img': img})
     return details
 
+
 #получаем список переводов
 def get_translate(id):
     translates = []

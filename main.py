@@ -6,7 +6,7 @@ from pydantic import BaseModel, EmailStr, Field
 import uvicorn
 from parser import get_main_category, get_main_subcategory, get_list_in_category, get_collections, search_content, \
     details, get_translate
-# from getstream import
+from getstream import get_stream
 from database import create_user
 app = FastAPI()
 
@@ -75,6 +75,11 @@ def get_details(id: int):
 @app.get("/translates", summary="Вывод списка переводов", tags=["Детали"])
 def get_translates(id: int):
     return get_translate(id)
+
+
+@app.get("/stream", summary="Вывод списка стримов по разрешениям", tags=["Детали"])
+def get_streames(id: int, season: Optional[str] = 1, episode: Optional[int] = 1):
+    return get_stream(id, season, episode)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)
